@@ -29,7 +29,7 @@ def enter_encounter_map(player_id: int):
         raise HTTPException(500, "宝可梦数据为空")
 
     weights = [1 / max(1, c["rarity"]) for c in candidates]
-    chosen = random.choices(candidates, weights=weights, k=3)
+    chosen = random.sample(candidates, k=min(3, len(candidates)))
 
     encounter_id = str(uuid.uuid4())
     pokemons = {}
@@ -89,6 +89,7 @@ def spawn_pokemon(player_id: int):
 def get_player_balls(player_id: int):
     conn = get_db()
     cursor = conn.cursor()
+
     cursor.execute("""
         SELECT pokeball_normal, pokeball_super, pokeball_ultra
         FROM player_resource
@@ -96,6 +97,9 @@ def get_player_balls(player_id: int):
     """, (player_id,))
     row = cursor.fetchone()
     conn.close()
+
+    if not row:
+        raise HTTPException(400, "玩家不存在")
 
     return {
         "balls": {
@@ -123,8 +127,13 @@ def catch_pokemon(
     if encounter["player_id"] != player_id:
         raise HTTPException(403, "非法操作")
 
+    # 防重复点击
     if uid not in encounter["pokemons"]:
-        raise HTTPException(400, "宝可梦不存在")
+        return {
+            "success": False,
+            "pokemon_instance_id": None,
+            "final_rate": 0
+        }
 
     wild = encounter["pokemons"][uid]
 
@@ -138,21 +147,25 @@ def catch_pokemon(
     }.get(ball_type)
 
     if not ball_col:
+        conn.close()
         raise HTTPException(400, "非法球")
 
-    cursor.execute(f"""
-        SELECT {ball_col}
-        FROM player_resource
-        WHERE player_id=%s
-    """, (player_id,))
+    cursor.execute(
+        f"SELECT {ball_col} FROM player_resource WHERE player_id=%s",
+        (player_id,)
+    )
     if cursor.fetchone()[ball_col] <= 0:
+        conn.close()
         raise HTTPException(400, "球不足")
 
-    cursor.execute(f"""
+    cursor.execute(
+        f"""
         UPDATE player_resource
         SET {ball_col}={ball_col}-1
         WHERE player_id=%s
-    """, (player_id,))
+        """,
+        (player_id,)
+    )
 
     base = 0.5
     rarity_factor = max(0.05, 1 - wild["rarity"] * 0.08)
@@ -178,8 +191,8 @@ def catch_pokemon(
     conn.commit()
     conn.close()
 
-    # ⭐ 无论成功还是失败，都只移除这一只
-    encounter["pokemons"].pop(uid)
+    # ⭐ 只移除一次，且不会再报 400
+    encounter["pokemons"].pop(uid, None)
 
     return {
         "success": success,
@@ -205,18 +218,25 @@ def buy_ball(player_id: int, ball_type: str):
     conn = get_db()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT gold FROM player_resource WHERE player_id=%s", (player_id,))
+    cursor.execute(
+        "SELECT gold FROM player_resource WHERE player_id=%s",
+        (player_id,)
+    )
     gold = cursor.fetchone()["gold"]
 
     if gold < PRICE[ball_type]:
+        conn.close()
         raise HTTPException(400, "金币不足")
 
-    cursor.execute(f"""
+    cursor.execute(
+        f"""
         UPDATE player_resource
         SET gold=gold-%s,
             {BALL[ball_type]}={BALL[ball_type]}+1
         WHERE player_id=%s
-    """, (PRICE[ball_type], player_id))
+        """,
+        (PRICE[ball_type], player_id)
+    )
 
     conn.commit()
     conn.close()
