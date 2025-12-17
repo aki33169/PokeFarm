@@ -231,7 +231,7 @@ def build_building(player_id: int, building_code: str):
     pos_x = pos_y = None
     START_Y=1
     START_X=1
-    MAX_COL=4
+    MAX_COL=7
     y = START_Y
 
     while True:

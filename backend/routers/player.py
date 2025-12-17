@@ -52,10 +52,10 @@ def register(username: str, password: str, nickname: str = None):
         # 用 building.code 查真实 id
         init_buildings = [
             # code, x, y
-            ("home",        0, 0),
-            ("lumber_mill",  2, 0),
-            ("pokecenter",  0, 2),
-            ("shop",        2, 2),
+            ("home",        1, 1),
+            ("lumber_mill",  2, 1),
+            ("pokecenter",  3, 2),
+            ("shop",        4, 2),
         ]
 
         for code, x, y in init_buildings:
