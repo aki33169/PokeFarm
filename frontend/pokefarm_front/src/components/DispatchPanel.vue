@@ -83,7 +83,6 @@ export default {
     },
 
     onClickPokemon(p) {
-      // ⭐ 第二次点同一只 → 交给父组件打开详情
       if (this.selected && this.selected.pokemon_id === p.pokemon_id) {
         this.$emit('open-pokemon-detail', p.pokemon_id)
       } else {

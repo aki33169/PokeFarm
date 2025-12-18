@@ -21,6 +21,6 @@ def start_scheduler():
     scheduler.add_job(
         run_all_players_produce,
         trigger="interval",
-        seconds=5   # ⭐ 每 5 秒自动结算一次
+        seconds=5   # 每 5 秒自动结算一次
     )
     scheduler.start()

@@ -191,7 +191,6 @@ def catch_pokemon(
     conn.commit()
     conn.close()
 
-    # ⭐ 只移除一次，且不会再报 400
     encounter["pokemons"].pop(uid, None)
 
     return {

@@ -138,7 +138,6 @@ export default {
       return this.localBuilding.workers || []
     },
 
-    // ⭐ 核心改动：真实可派遣槽位数
     totalSlots() {
       return (
         (this.localBuilding.base_slots ?? 0) +
@@ -272,7 +271,7 @@ export default {
 
 .panel {
   width: 420px;
-  max-height: 520px;          /* ⭐ 防止整体被撑爆 */
+  max-height: 520px; 
   background: #c49a6c;
   border: 4px solid #3a220f;
   padding: 12px;
@@ -323,7 +322,7 @@ export default {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
-  max-height: 200px;          /* ⭐ 槽位区滚动 */
+  max-height: 200px; 
   overflow-y: auto;
   margin-bottom: 8px;
 }

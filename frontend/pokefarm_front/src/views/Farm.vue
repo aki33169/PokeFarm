@@ -55,7 +55,7 @@
         </div>
       </div>
 
-      <!-- ⭐ 外出按钮（左下角） -->
+      <!--  外出按钮（左下角） -->
       <div class="encounter-float-btn" @click.stop="goEncounter">
         <img :src="getIcon('pokeball_normal')" />
       </div>

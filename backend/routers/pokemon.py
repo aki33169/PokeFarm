@@ -110,7 +110,7 @@ def get_pokemon_detail(player_id: int, pokemon_id: int):
 
         "stats": stats,
 
-        # ⭐ 新增：升级消耗（前端按钮用）
+
         "level_up_cost": {
             "berry": level
         }

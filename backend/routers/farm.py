@@ -179,7 +179,7 @@ def get_farm_state(player_id: int):
             "output_base": b["output_base"],
             "output_per_hour": round(output_per_hour, 1),
 
-            # ⭐ 槽位 = 基础 + bonus
+            # 槽位 = 基础 + bonus
             "base_slots": b["base_slots"] + (b["slot_bonus"] or 0),
 
             "job_id": b["job_id"],
@@ -359,7 +359,7 @@ def demolish_building(player_id: int, building_instance_id: int):
             (w["pokemon_id"],)
         )
 
-    # 4. 删除派遣记录（防 fk_job_assignment）
+    # 4. 删除派遣记录
     cursor.execute(
         """
         DELETE FROM job_assignment
@@ -368,7 +368,7 @@ def demolish_building(player_id: int, building_instance_id: int):
         (building_instance_id,)
     )
 
-    # ⭐ 5. 删除产出日志（防 fk_produce_log）
+    #  5. 删除产出日志
     cursor.execute(
         """
         DELETE FROM produce_log
