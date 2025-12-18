@@ -8,5 +8,13 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
+  },
+  server: {
+    allowedHosts: [
+      'unendurably-desired-gertha.ngrok-free.dev'
+    ],
+    fs: {
+      strict: false
+    }
   }
 })
